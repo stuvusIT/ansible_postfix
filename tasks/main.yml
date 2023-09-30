@@ -1,2 +1,13 @@
 ---
 
+- name: Install postfix
+  package:
+    name:
+      - postfix
+    state: present
+
+- name: Place postfix config
+  template:
+    src: main.cf.j2
+    dest: /etc/postfix/main.cf
+  notify: Restart postfix service
