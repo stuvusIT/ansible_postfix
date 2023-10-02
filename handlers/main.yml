@@ -4,3 +4,15 @@
     name: postfix
     enabled: True
     state: restarted
+
+- name: Restart saslauthd service
+  service:
+    name: saslauthd
+    enabled: True
+    state: restarted
+
+- name: Restart opendkim service
+  service:
+    name: opendkim
+    enabled: True
+    state: restarted

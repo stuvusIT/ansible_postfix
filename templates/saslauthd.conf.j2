@@ -1,0 +1,9 @@
+ldap_servers: {{ postfix_ldap_servers }}
+{% if postfix_bind_dn is defined %}
+ldap_bind_dn: {{ postfix_bind_dn }}
+{% endif %}
+{% if postfix_bind_pw is defined %}
+ldap_bind_pw: {{ postfix_bind_pw }}
+{% endif %}
+ldap_search_base: {{ postfix_ldap_search_base }}
+ldap_auth_method: bind

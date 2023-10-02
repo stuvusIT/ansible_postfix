@@ -4,10 +4,108 @@
   package:
     name:
       - postfix
+      - postfix-ldap
+      - postfix-pgsql
     state: present
 
-- name: Place postfix config
-  template:
-    src: main.cf.j2
+- name: Setup LDAP authentication
+  block:
+    - name: Install saslauthd
+      package:
+        name:
+          - libsasl2-modules
+          - sasl2-bin
+        state: present
+
+    - name: Place LDAP connection config file
+      template:
+        src: saslauthd.conf.j2
+        dest: /etc/saslauthd.conf
+
+    - name: Place SMTP SASL config file
+      copy:
+        src: smtpd.conf
+        dest: /etc/postfix/sasl/smtpd.conf
+
+    - name: Place saslauthd-postfix config file
+      copy:
+        src: saslauthd-postfix
+        dest: /etc/default/saslauthd-postfix
+
+    - name: Create socket directory for saslauthd
+      shell: dpkg-statoverride --add root sasl 755 /var/spool/postfix/var/run/saslauthd
+      register: dpkg_sasl_stdout
+      changed_when: "'already exists' not in dpkg_sasl_stdout.stdout"
+      ignore_errors: yes
+
+    - name: Add group sasl to user postfix
+      user:
+        name: postfix
+        append: True
+        groups: sasl
+
+  when: postfix_ldap_servers is defined
+  notify: Restart saslauthd service
+
+- name: Setup DKIM signing
+  block:
+    - name: Install OpenDKIM
+      package:
+        name:
+          - opendkim
+          - opendkim-tools
+        state: present
+
+    - name: Create opendkim config directory
+      file:
+        state: directory
+        dest: /etc/opendkim
+        group: opendkim
+
+    - name: Create opendkim key directory
+      file:
+        state: directory
+        dest: /etc/opendkim/keys
+        owner: opendkim
+        group: opendkim
+        mode: 0700
+
+    - name: Create socket directory for opendkim
+      file:
+        state: directory
+        dest: /var/spool/postfix/var/run/opendkim
+        group: opendkim
+        mode: 0775
+
+    - name: Place opendkim config
+      copy:
+        content: "{{ postfix_opendkim_config }}"
+        dest: /etc/opendkim.conf
+      notify: Restart opendkim service
+
+    - name: Add group opendkim to user postfix
+      user:
+        name: postfix
+        append: True
+        groups: opendkim
+
+  when: postfix_dkim_key_selector is defined
+
+- name: Place postfix main.cf
+  copy:
+    content: "{{ postfix_main_config }}"
     dest: /etc/postfix/main.cf
+  notify: Restart postfix service
+
+- name: Place postfix master.cf
+  copy:
+    content: "{{ postfix_master_config }}"
+    dest: /etc/postfix/master.cf
+  notify: Restart postfix service
+
+- name: Place lookup table config files
+  copy:
+    content: "{{item.content}}"
+    dest: "/etc/postfix/{{item.name}}.cf"
+  loop: "{{ postfix_lookup_table_configs }}"
   notify: Restart postfix service
