@@ -47,7 +47,7 @@
   when: postfix_ldap_servers is defined
   notify: Restart saslauthd service
 
-- name: Setup DKIM signing
+- name: Setup OpenDKIM
   block:
     - name: Install OpenDKIM
       package:
@@ -89,7 +89,7 @@
         append: True
         groups: opendkim
 
-  when: postfix_dkim_key_selector is defined
+  when: postfix_opendkim_enabled is defined
 
 - name: Place postfix main.cf
   copy:
