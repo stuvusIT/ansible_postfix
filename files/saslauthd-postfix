@@ -1,5 +1,3 @@
-# {{ ansible_managed }}
-
 # Should saslauthd run automatically on startup? (default: no)
 START=yes
 

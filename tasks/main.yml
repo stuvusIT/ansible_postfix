@@ -47,6 +47,26 @@
   when: postfix_ldap_servers is defined
   notify: Restart saslauthd service
 
+- name: Disable and stop saslauthd
+  block:
+    - name: Install python-apt
+      package:
+        name:
+          - python-apt-dev
+        state: present
+
+    - name: Gather package facts
+      package_facts:
+        manager: auto
+
+    - name: Stop and disable saslauthd service
+      service:
+        name: saslauthd
+        state: stopped
+        enabled: no
+      when: "'libsasl2-modules' in ansible_facts.packages"
+  when: postfix_ldap_servers is not defined
+
 - name: Setup OpenDKIM
   block:
     - name: Install OpenDKIM
@@ -81,31 +101,70 @@
       copy:
         content: "{{ postfix_opendkim_config }}"
         dest: /etc/opendkim.conf
-      notify: Restart opendkim service
 
     - name: Add group opendkim to user postfix
       user:
         name: postfix
         append: True
         groups: opendkim
-
   when: postfix_opendkim_enabled is defined
+  notify: Restart opendkim service
 
-- name: Place postfix main.cf
+- name: Disable and stop saslauthd
+  block:
+    - name: Install python-apt
+      package:
+        name:
+          - python-apt-dev
+        state: present
+
+    - name: Gather package facts
+      package_facts:
+        manager: auto
+
+    - name: Stop and disable saslauthd service
+      service:
+        name: opendkim
+        state: stopped
+        enabled: no
+      when: "'opendkim' in ansible_facts.packages"
+  when: postfix_opendkim_enabled is not defined
+
+- name: Place postfix config files
   copy:
-    content: "{{ postfix_main_config }}"
-    dest: /etc/postfix/main.cf
+    content: "{{item.value}}"
+    dest: "/etc/postfix/{{item.key}}.cf"
+  loop: "{{ postfix_additional_configs | dict2items }}"
   notify: Restart postfix service
 
-- name: Place postfix master.cf
-  copy:
-    content: "{{ postfix_master_config }}"
-    dest: /etc/postfix/master.cf
-  notify: Restart postfix service
+- name: Find existing postfix config files
+  find:
+    paths:
+      - /etc/postfix
+    patterns:
+      - "*.cf"
+    excludes:
+      - "dynamicmaps.cf"
+  register: postfix_existing_config_files
 
-- name: Place lookup table config files
-  copy:
-    content: "{{item.content}}"
-    dest: "/etc/postfix/{{item.name}}.cf"
-  loop: "{{ postfix_lookup_table_configs }}"
-  notify: Restart postfix service
+- name: Calculate which postfix config files to delete
+  set_fact:
+    postfix_confs_to_delete: >-
+      {{
+        postfix_existing_config_files.files
+        | map(attribute='path')
+        | select("match", "^/etc/postfix/.*\.cf$")
+        | map('basename') | map('splitext') | map('first')
+        | difference(postfix_additional_configs.keys())
+      }}
+
+- name: Delete existing unwanted postfix configs
+  file:
+    state: absent
+    path: "{{ path }}"
+  notify:
+    - Restart postfix service
+  loop: >-
+    {{postfix_confs_to_delete | map('regex_replace', '^', '/etc/postfix/') | map('regex_replace', '$', '.cf')}}
+  loop_control:
+    loop_var: path
