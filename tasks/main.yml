@@ -34,9 +34,9 @@
 
     - name: Create socket directory for saslauthd
       shell: dpkg-statoverride --add root sasl 755 /var/spool/postfix/var/run/saslauthd
-      register: dpkg_sasl_stdout
-      changed_when: "'already exists' not in dpkg_sasl_stdout.stdout"
-      ignore_errors: yes
+      register: dpkg_sasl
+      changed_when: "'already exists' not in dpkg_sasl.stderr"
+      failed_when: "dpkg_sasl.rc != 0 and 'already exists; aborting' not in dpkg_sasl.stderr"
 
     - name: Add group sasl to user postfix
       user:
