@@ -136,6 +136,7 @@
     dest: "/etc/postfix/{{item.key}}.cf"
   loop: "{{ postfix_additional_configs | dict2items }}"
   notify: Restart postfix service
+  no_log: True
 
 - name: Find existing postfix config files
   find:
