@@ -1,4 +1,5 @@
 postfix_lookup_table_configs: []
+postfix_opendkim_additional_configs: {}
 postfix_opendkim_keys: {}
 postfix_saslauthd_options:
   ldap_servers: "{{ postfix_ldap_servers }}"

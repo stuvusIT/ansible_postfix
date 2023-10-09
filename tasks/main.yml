@@ -115,6 +115,40 @@
           'mode': '0600'
         }) }}"
       loop: "{{ postfix_opendkim_keys | dict2items }}"
+
+    - name: Place additional opendkim config files
+      copy:
+        content: "{{ item.value }}"
+        dest: /etc/opendkim/{{ item.key }}.cf
+      loop: "{{ postfix_opendkim_additional_configs | dict2items }}"
+      no_log: True
+
+    - name: Find existing opendkim config files
+      find:
+        paths:
+          - /etc/opendkim
+        patterns:
+          - "*.cf"
+      register: postfix_opendkim_existing_config_files
+
+    - name: Calculate which opendkim config files to delete
+      set_fact:
+        postfix_opendkim_confs_to_delete: >-
+          {{
+            postfix_opendkim_existing_config_files.files
+            | map(attribute='path')
+            | map('basename') | map('splitext') | map('first')
+            | difference(postfix_opendkim_additional_configs.keys())
+          }}
+
+    - name: Delete existing unwanted postfix configs
+      file:
+        state: absent
+        path: "{{ path }}"
+      loop: >-
+        {{postfix_opendkim_confs_to_delete | map('regex_replace', '^', '/etc/opendkim/') | map('regex_replace', '$', '.cf')}}
+      loop_control:
+        loop_var: path
   when: postfix_opendkim_enabled is defined
   notify: Restart opendkim service
 
