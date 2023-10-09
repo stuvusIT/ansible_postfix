@@ -80,15 +80,11 @@
       file:
         state: directory
         dest: /etc/opendkim
-        group: opendkim
 
     - name: Create opendkim key directory
       file:
         state: directory
         dest: /etc/opendkim/keys
-        owner: opendkim
-        group: opendkim
-        mode: 0700
 
     - name: Create socket directory for opendkim
       file:
