@@ -107,6 +107,14 @@
         name: postfix
         append: True
         groups: opendkim
+
+    - name: Place opendkim keys
+      copy: "{{ item.value | combine({
+          'dest': '/etc/opendkim/keys/' + item.key + '.private',
+          'owner': 'opendkim',
+          'mode': '0600'
+        }) }}"
+      loop: "{{ postfix_opendkim_keys | dict2items }}"
   when: postfix_opendkim_enabled is defined
   notify: Restart opendkim service
 
