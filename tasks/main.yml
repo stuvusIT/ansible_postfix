@@ -140,11 +140,8 @@
     - name: Delete existing unwanted postfix configs
       file:
         state: absent
-        path: "{{ path }}"
-      loop: >-
-        {{postfix_opendkim_confs_to_delete | map('regex_replace', '^', '/etc/opendkim/') | map('regex_replace', '$', '.cf')}}
-      loop_control:
-        loop_var: path
+        path: "/etc/opendkim/{{ item }}.cf"
+      loop: "{{ postfix_opendkim_confs_to_delete }}"
   when: postfix_opendkim_enabled is defined
   notify: Restart opendkim service
 
@@ -192,7 +189,6 @@
       {{
         postfix_existing_config_files.files
         | map(attribute='path')
-        | select("match", "^/etc/postfix/.*\.cf$")
         | map('basename') | map('splitext') | map('first')
         | difference(postfix_additional_configs.keys())
       }}
@@ -200,10 +196,7 @@
 - name: Delete existing unwanted postfix configs
   file:
     state: absent
-    path: "{{ path }}"
+    path: /etc/postfix/{{ item }}.cf
   notify:
     - Restart postfix service
-  loop: >-
-    {{postfix_confs_to_delete | map('regex_replace', '^', '/etc/postfix/') | map('regex_replace', '$', '.cf')}}
-  loop_control:
-    loop_var: path
+  loop: "{{ postfix_confs_to_delete }}"
