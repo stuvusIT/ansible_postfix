@@ -146,7 +146,7 @@
   when: postfix_opendkim_enabled is defined
   notify: Restart opendkim service
 
-- name: Disable and stop saslauthd
+- name: Disable and stop opendkim
   block:
     - name: Install python-apt
       package:
