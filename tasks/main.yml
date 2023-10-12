@@ -28,8 +28,8 @@
         dest: /etc/postfix/sasl/smtpd.conf
 
     - name: Place saslauthd-postfix config file
-      copy:
-        src: saslauthd-postfix
+      template:
+        src: saslauthd-postfix.j2
         dest: /etc/default/saslauthd-postfix
 
     - name: Create socket directory for saslauthd
