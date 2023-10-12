@@ -44,7 +44,7 @@
         append: True
         groups: sasl
 
-  when: postfix_sasl_enabled is defined
+  when: postfix_sasl_enabled
   notify: Restart saslauthd service
 
 - name: Disable and stop saslauthd
@@ -65,7 +65,7 @@
         state: stopped
         enabled: no
       when: "'libsasl2-modules' in ansible_facts.packages"
-  when: postfix_sasl_enabled is not defined
+  when: not postfix_sasl_enabled
 
 - name: Setup OpenDKIM
   block:
@@ -143,7 +143,7 @@
         state: absent
         path: "/etc/opendkim/{{ item }}.cf"
       loop: "{{ postfix_opendkim_confs_to_delete }}"
-  when: postfix_opendkim_enabled is defined
+  when: postfix_opendkim_enabled
   notify: Restart opendkim service
 
 - name: Disable and stop opendkim
@@ -164,7 +164,7 @@
         state: stopped
         enabled: no
       when: "'opendkim' in ansible_facts.packages"
-  when: postfix_opendkim_enabled is not defined
+  when: not postfix_opendkim_enabled
 
 - name: Place postfix config files
   copy:
