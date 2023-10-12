@@ -117,7 +117,8 @@
         content: "{{ item.value }}"
         dest: /etc/opendkim/{{ item.key }}.cf
       loop: "{{ postfix_opendkim_additional_configs | dict2items }}"
-      no_log: True
+      loop_control:
+        label: "{{ item.key }}"
 
     - name: Find existing opendkim config files
       find:
@@ -170,8 +171,9 @@
     content: "{{item.value}}"
     dest: "/etc/postfix/{{item.key}}.cf"
   loop: "{{ postfix_additional_configs | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
   notify: Restart postfix service
-  no_log: True
 
 - name: Find existing postfix config files
   find:
