@@ -160,7 +160,7 @@
       package_facts:
         manager: auto
 
-    - name: Stop and disable saslauthd service
+    - name: Stop and disable opendkim service
       service:
         name: opendkim
         state: stopped
