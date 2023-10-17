@@ -47,25 +47,14 @@
   when: postfix_sasl_enabled
   notify: Restart saslauthd service
 
-- name: Disable and stop saslauthd
-  block:
-    - name: Install python-apt
-      package:
-        name:
-          - python-apt-dev
-        state: present
-
-    - name: Gather package facts
-      package_facts:
-        manager: auto
-
-    - name: Stop and disable saslauthd service
-      service:
-        name: saslauthd
-        state: stopped
-        enabled: no
-      when: "'libsasl2-modules' in ansible_facts.packages"
+- name: Stop and disable saslauthd service
+  service:
+    name: saslauthd
+    state: stopped
+    enabled: no
   when: not postfix_sasl_enabled
+  register: postfix_service_stop
+  failed_when: postfix_service_stop is failed and 'Could not find the requested service ' not in postfix_service_stop.msg
 
 - name: Setup OpenDKIM
   block:
@@ -146,25 +135,14 @@
   when: postfix_opendkim_enabled
   notify: Restart opendkim service
 
-- name: Disable and stop opendkim
-  block:
-    - name: Install python-apt
-      package:
-        name:
-          - python-apt-dev
-        state: present
-
-    - name: Gather package facts
-      package_facts:
-        manager: auto
-
-    - name: Stop and disable opendkim service
-      service:
-        name: opendkim
-        state: stopped
-        enabled: no
-      when: "'opendkim' in ansible_facts.packages"
+- name: Stop and disable opendkim service
+  service:
+    name: opendkim
+    state: stopped
+    enabled: no
   when: not postfix_opendkim_enabled
+  register: postfix_service_stop
+  failed_when: postfix_service_stop is failed and 'Could not find the requested service' not in postfix_service_stop.msg
 
 - name: Place postfix config files
   copy:
