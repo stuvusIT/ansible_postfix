@@ -161,6 +161,8 @@
       - "*.cf"
     excludes:
       - "dynamicmaps.cf"
+      - "main.cf"
+      - "master.cf"
   register: postfix_existing_config_files
 
 - name: Calculate which postfix config files to delete
