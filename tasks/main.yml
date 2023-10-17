@@ -24,7 +24,7 @@
 
     - name: Place SMTP SASL config file
       copy:
-        src: smtpd.conf
+        src: sasl-smtpd.conf
         dest: /etc/postfix/sasl/smtpd.conf
 
     - name: Place saslauthd-postfix config file
