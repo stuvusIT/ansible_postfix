@@ -148,7 +148,7 @@
   copy:
     content: "{{item.value}}"
     dest: "/etc/postfix/{{item.key}}.cf"
-  loop: "{{ postfix_additional_configs | dict2items }}"
+  loop: "{{ postfix_configs | dict2items }}"
   loop_control:
     label: "{{ item.key }}"
   notify: Restart postfix service
@@ -172,7 +172,7 @@
         postfix_existing_config_files.files
         | map(attribute='path')
         | map('basename') | map('splitext') | map('first')
-        | difference(postfix_additional_configs.keys())
+        | difference(postfix_configs.keys())
       }}
 
 - name: Delete existing unwanted postfix configs

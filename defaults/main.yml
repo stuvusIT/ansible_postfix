@@ -27,4 +27,4 @@ postfix_opendkim_config: |
   # by the package dns-root-data.
   TrustAnchorFile         /usr/share/dns/root.key
 
-postfix_additional_configs: {}
+postfix_configs: {}
