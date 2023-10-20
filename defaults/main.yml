@@ -1,12 +1,6 @@
-postfix_opendkim_additional_configs: {}
-postfix_opendkim_enabled: False
-postfix_opendkim_keys: {}
-postfix_sasl_enabled: False
-postfix_saslauthd_options:
-  ldap_servers: "{{ postfix_ldap_servers }}"
-  ldap_search_base: "{{ postfix_ldap_search_base }}"
-  ldap_auth_method: bind
+postfix_configs: {}
 
+postfix_opendkim_additional_configs: {}
 postfix_opendkim_config: |
   Syslog                  yes
   SyslogSuccess           yes
@@ -26,5 +20,11 @@ postfix_opendkim_config: |
   # The trust anchor enables DNSSEC. In Debian, the trust anchor file is provided
   # by the package dns-root-data.
   TrustAnchorFile         /usr/share/dns/root.key
+postfix_opendkim_enabled: False
+postfix_opendkim_keys: {}
 
-postfix_configs: {}
+postfix_sasl_enabled: False
+postfix_saslauthd_options:
+  ldap_servers: "{{ postfix_ldap_servers }}"
+  ldap_search_base: "{{ postfix_ldap_search_base }}"
+  ldap_auth_method: bind
