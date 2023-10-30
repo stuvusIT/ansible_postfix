@@ -76,30 +76,9 @@ postfix_saslauthd_options:
 If you want to add DKIM signing/checking, this role can install and configure OpenDKIM.
 This can be enabled by setting `postfix_opendkim_enabled: True`.
 
-The default config shown below, sets OpenDKIM up in verifier mode, listening at `localhost:12301`:
-
-```
-Syslog                  yes
-SyslogSuccess           yes
-Mode                    v
-
-# In Debian, opendkim runs as user "opendkim". A umask of 007 is required when
-# using a local socket with MTAs that access the socket as a non-privileged
-# user (for example, Postfix). You may need to add user "postfix" to group
-# "opendkim" in that case.
-UserID                  opendkim
-UMask                   007
-
-# Socket for the MTA connection (required).
-Socket                  inet:12301@localhost
-PidFile                 /run/opendkim/opendkim.pid
-
-# The trust anchor enables DNSSEC. In Debian, the trust anchor file is provided
-# by the package dns-root-data.
-TrustAnchorFile         /usr/share/dns/root.key
-```
-
-If you have different requirements, you can simply override the config by setting
+The default config (see `defaults/main.yml`), sets OpenDKIM up in verifier mode, listening at
+`localhost:12301`:
+If you have different requirements, you can simply override the default config by setting
 `postfix_opendkim_config`.
 
 ### OpenDKIM Additional Configuration
