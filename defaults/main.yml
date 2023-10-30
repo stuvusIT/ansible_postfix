@@ -24,7 +24,4 @@ postfix_opendkim_enabled: False
 postfix_opendkim_keys: {}
 
 postfix_sasl_enabled: False
-postfix_saslauthd_options:
-  ldap_servers: "{{ postfix_ldap_servers }}"
-  ldap_search_base: "{{ postfix_ldap_search_base }}"
-  ldap_auth_method: bind
+postfix_saslauthd_options: {}

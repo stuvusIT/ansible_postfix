@@ -20,7 +20,7 @@ It is developed and tested on a plain Debian install, but may work for Debian de
 | `postfix_opendkim_enabled`            |          `False`          | Enable OpenDKIM daemon, see [#opendkim]                                           |
 | `postfix_opendkim_keys`               |           `{}`            | OpenDKIM private keys, see [#dkim-private-keys]                                   |
 | `postfix_sasl_enabled`                |          `False`          | Enable saslauthd daemon, see [#saslauthd]                                         |
-| `postfix_saslauthd_options`           |     See [#saslauthd]      | saslauthd configuration options, see [#saslauthd]                                 |
+| `postfix_saslauthd_options`           |           `{}`            | saslauthd configuration options, see [#saslauthd]                                 |
 
 ## Postfix Configuration
 
@@ -59,15 +59,15 @@ If you need to authenticate users against an LDAP directory, this roles can inst
 saslauthd.
 This can be enabled by setting `postfix_sasl_enabled: True`.
 
-If you need bind credentials or other additional configuration options, you need to set
+Bind credentials or other additional configuration options need to be set via
 `postfix_saslauthd_options`.
 This dict will be parsed and written to the saslauthd config file.
-The default is:
+Example:
 
 ```yml
 postfix_saslauthd_options:
-  ldap_servers: "{{ postfix_ldap_servers }}"
-  ldap_search_base: "{{ postfix_ldap_search_base }}"
+  ldap_servers: ldaps://ldap.example.com
+  ldap_search_base: dc=example,dc=com
   ldap_auth_method: bind
 ```
 
