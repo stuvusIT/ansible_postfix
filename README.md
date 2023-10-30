@@ -96,7 +96,7 @@ instead trigger a restart of the OpenDKIM daemon.
 ### DKIM Private Keys
 
 The `postfix_opendkim_keys` variable can be used to copy DKIM private keys to the host.
-This variable takes is a dict where each key-value pair describes a private key.
+This variable takes a dict where each key-value pair describes a private key.
 For each key, the value is simply passed to the Ansible
 [copy module](https://docs.ansible.com/ansible/latest/modules/copy_module.html), and the file is
 placed at the destination `/etc/opendkim/keys/{{ key }}.private` with appropriate permissions for
