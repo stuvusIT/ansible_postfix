@@ -53,6 +53,8 @@ files:
 These are left untouched in case they are missing from `postfix_configs`, in order to allow using
 distribution-supplied defaults for these files.
 
+The role additionally installs the packages `postfix-ldap` and `postfix-pgsql` to make LDAP and PostgreSQL lookups possible.
+
 ## saslauthd
 
 If you need to authenticate users against an LDAP directory, this roles can install and enable

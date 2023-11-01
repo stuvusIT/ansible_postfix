@@ -19,6 +19,7 @@ postfix_opendkim_config: |
 
   # The trust anchor enables DNSSEC. In Debian, the trust anchor file is provided
   # by the package dns-root-data.
+  # This package is installed as a dependency of opendkim.
   TrustAnchorFile         /usr/share/dns/root.key
 postfix_opendkim_enabled: False
 postfix_opendkim_keys: {}
