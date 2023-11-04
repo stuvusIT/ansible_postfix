@@ -1,0 +1,28 @@
+postfix_configs: {}
+
+postfix_opendkim_additional_configs: {}
+postfix_opendkim_config: |
+  Syslog                  yes
+  SyslogSuccess           yes
+  Mode                    v
+
+  # In Debian, opendkim runs as user "opendkim". A umask of 007 is required when
+  # using a local socket with MTAs that access the socket as a non-privileged
+  # user (for example, Postfix). You may need to add user "postfix" to group
+  # "opendkim" in that case.
+  UserID                  opendkim
+  UMask                   007
+
+  # Socket for the MTA connection (required).
+  Socket                  inet:12301@localhost
+  PidFile                 /run/opendkim/opendkim.pid
+
+  # The trust anchor enables DNSSEC. In Debian, the trust anchor file is provided
+  # by the package dns-root-data.
+  # This package is installed as a dependency of opendkim.
+  TrustAnchorFile         /usr/share/dns/root.key
+postfix_opendkim_enabled: False
+postfix_opendkim_keys: {}
+
+postfix_sasl_enabled: False
+postfix_saslauthd_options: {}
