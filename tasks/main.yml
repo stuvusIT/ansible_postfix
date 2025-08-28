@@ -33,7 +33,7 @@
         dest: /etc/default/saslauthd-postfix
 
     - name: Create socket directory for saslauthd
-      shell: dpkg-statoverride --add root sasl 755 /var/spool/postfix/var/run/saslauthd
+      shell: dpkg-statoverride --add root sasl 710 /var/spool/postfix/var/run/saslauthd
       register: dpkg_sasl
       changed_when: "'already exists' not in dpkg_sasl.stderr"
       failed_when: "dpkg_sasl.rc != 0 and 'already exists; aborting' not in dpkg_sasl.stderr"
@@ -43,6 +43,12 @@
         name: postfix
         append: True
         groups: sasl
+
+    - name: Create custom saslauthd service
+      copy:
+        src: saslauthd.service
+        dest: /etc/systemd/system/saslauthd.service
+      notify: Reload systemd configuration
 
   when: postfix_sasl_enabled
   notify: Restart saslauthd service

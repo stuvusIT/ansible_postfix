@@ -1,0 +1,14 @@
+[Unit]
+Description=SASL Authentication Daemon
+Documentation=man:saslauthd(8)
+
+[Service]
+Type=forking
+Group=sasl
+PIDFile=/var/spool/postfix/var/run/saslauthd/saslauthd.pid
+EnvironmentFile=/etc/default/saslauthd-postfix
+ExecStart=/usr/sbin/saslauthd -a $MECHANISMS $MECH_OPTIONS $OPTIONS -n $THREADS
+RuntimeDirectory=saslauthd
+
+[Install]
+WantedBy=multi-user.target

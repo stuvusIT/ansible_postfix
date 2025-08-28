@@ -11,7 +11,7 @@ galaxy_info:
   platforms:
     - name: Debian
       versions:
-        - bullseye
+        - trixie
 
   galaxy_tags:
     - mail
